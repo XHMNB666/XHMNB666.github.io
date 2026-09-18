@@ -1,6 +1,6 @@
 /* ===================================================
    心痕の博客 · MD3 音乐播放器
-   Material Design 3 风格 · 纯静态 · 双歌单 · 多镜像回退
+   Material Design 3 风格 · 纯静态 · 多歌单 · 多镜像回退
    无 APlayer 依赖，仅用原生 Audio + fetch
    =================================================== */
 
@@ -8,15 +8,15 @@
   'use strict';
 
   var PLAYLISTS = [
-    { name: 'Jay ok心痕', id: '17860954244' },
-    { name: '单曲循环',   id: '14060893995' }
+    { name: 'QQ歌单', id: '9160070320', server: 'tencent' },
+    { name: '网易歌单', id: '14060893995', server: 'netease' }
   ];
 
   var MIRRORS = [
     'https://api.injahow.cn/meting/',
+    'https://meting.qjqq.cn/',
     'https://api.i-meto.com/meting/api',
-    'https://meting.imetyou.top/api',
-    'https://meting.qjqq.cn/'
+    'https://meting.imetyou.top/api'
   ];
 
   var listIdx = 0;
@@ -52,13 +52,22 @@
     return m + ':' + (s < 10 ? '0' : '') + s;
   }
 
+  /* 兼容不同镜像的字段命名：name/title、artist/author */
+  function pickName(s) {
+    return s.name || s.title || '未知歌曲';
+  }
+  function pickArtist(s) {
+    return s.artist || s.author || '未知歌手';
+  }
+
   function fetchList(pl, cb) {
     var i = 0;
     function go() {
       if (i >= MIRRORS.length) { cb(null); return; }
       var base = MIRRORS[i++];
       var sep = base.indexOf('?') >= 0 ? '&' : '?';
-      var url = base + sep + 'server=netease&type=playlist&id=' + pl.id;
+      var url = base + sep + 'server=' + (pl.server || 'netease') +
+                '&type=playlist&id=' + pl.id;
       var ctrl = ('AbortController' in window) ? new AbortController() : null;
       var tid = ctrl ? setTimeout(function () { ctrl.abort(); }, 8000) : null;
       fetch(url, ctrl ? { signal: ctrl.signal } : undefined)
@@ -155,8 +164,8 @@
   function paint() {
     var s = songs[songIdx];
     if (!s) return;
-    var name = s.name || '未知歌曲';
-    var artist = s.artist || '未知歌手';
+    var name = pickName(s);
+    var artist = pickArtist(s);
     E.title.textContent = name;
     E.artist.textContent = artist;
     E.pillTitle.textContent = name;
@@ -170,8 +179,8 @@
       var li = document.createElement('li');
       li.className = (i === songIdx ? 'active' : '');
       li.innerHTML = '<span class="md3-li-idx">' + (i + 1) + '</span>' +
-                     '<span class="md3-li-name">' + (s.name || '未知') + '</span>' +
-                     '<span class="md3-li-artist">' + (s.artist || '') + '</span>';
+                     '<span class="md3-li-name">' + pickName(s) + '</span>' +
+                     '<span class="md3-li-artist">' + pickArtist(s) + '</span>';
       li.addEventListener('click', function () { load(i, true); });
       E.ol.appendChild(li);
     });
@@ -240,8 +249,8 @@
       }
       songs = arr.map(function (s) {
         return {
-          name: s.name || '未知歌曲',
-          artist: s.artist || '未知歌手',
+          name: pickName(s),
+          artist: pickArtist(s),
           url: s.url,
           pic: s.pic || s.cover || ''
         };
