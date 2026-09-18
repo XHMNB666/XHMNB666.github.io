@@ -1,6 +1,6 @@
 /* ===================================================
    心痕の博客 · 音乐播放器
-   双歌单切换 + Meting 多镜像回退 + APlayer 就绪等待
+   单键循环切歌单 + Meting 多镜像回退 + APlayer 就绪等待
    放到 source/js/player.js
    =================================================== */
 
@@ -52,7 +52,6 @@
     });
   }
 
-  /* 等待 window.APlayer 真正可用，避免脚本仍在加载时初始化失败 */
   function ensureAPlayer() {
     return new Promise(function (resolve, reject) {
       if (window.APlayer) return resolve();
@@ -139,25 +138,26 @@
     });
   }
 
+  /* 单个循环图标按钮，点一下切下一个歌单 */
   function buildSwitcher(wrap) {
-    var bar = document.createElement('div');
-    bar.id = 'hx-pl-switch';
-    PLAYLISTS.forEach(function (pl, idx) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = pl.name;
-      if (idx === current) b.className = 'active';
-      b.addEventListener('click', function () {
-        if (idx === current) return;
-        current = idx;
-        var all = bar.querySelectorAll('button');
-        for (var k = 0; k < all.length; k++) all[k].classList.remove('active');
-        b.classList.add('active');
-        loadList();
-      });
-      bar.appendChild(b);
+    var btn = document.createElement('button');
+    btn.id = 'hx-pl-switch';
+    btn.type = 'button';
+    btn.title = '切换歌单';
+    btn.setAttribute('aria-label', '切换歌单');
+    btn.innerHTML =
+      '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">' +
+      '<path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8A5.87 5.87 0 0 1 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>' +
+      '</svg>';
+
+    btn.addEventListener('click', function () {
+      current = (current + 1) % PLAYLISTS.length;
+      loadList();
+      btn.classList.add('spin');
+      setTimeout(function () { btn.classList.remove('spin'); }, 650);
     });
-    wrap.appendChild(bar);
+
+    wrap.appendChild(btn);
   }
 
   function initPlayer() {

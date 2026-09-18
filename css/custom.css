@@ -1834,3 +1834,59 @@ html.hx-reading #post {
 .hx-link-status.unknown {
   background: #ccc;
 }
+
+/* ===== 播放器歌单切换按钮（覆盖旧的多按钮样式） ===== */
+#hx-pl-switch {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: linear-gradient(135deg, #49b1f5, #a06cf5);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(73, 177, 245, 0.5);
+  transition: transform 0.25s ease;
+}
+#hx-pl-switch:hover {
+  transform: scale(1.12);
+}
+#hx-pl-switch svg {
+  display: block;
+}
+#hx-pl-switch.spin svg {
+  animation: hxSpin 0.6s ease;
+}
+@keyframes hxSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* 窄屏：让 APlayer 球是正圆，切换键贴右上角 */
+@media screen and (max-width: 768px) {
+  #hx-aplayer.aplayer-narrow {
+    width: 60px !important;
+  }
+  #hx-aplayer.aplayer-narrow .aplayer,
+  #hx-aplayer.aplayer-narrow .aplayer-body,
+  #hx-aplayer.aplayer-narrow .aplayer-pic,
+  #hx-aplayer.aplayer-narrow .aplayer-info {
+    border-radius: 50% !important;
+  }
+  #hx-aplayer.aplayer-narrow .aplayer {
+    overflow: hidden;
+  }
+  #hx-pl-switch {
+    top: -8px;
+    right: -8px;
+    width: 26px;
+    height: 26px;
+  }
+}
