@@ -1890,3 +1890,409 @@ html.hx-reading #post {
     height: 26px;
   }
 }
+/* ===================================================
+   MD3 音乐播放器样式
+   Material Design 3 · 药丸折叠 + 底部抽屉
+   =================================================== */
+
+#hx-md3 {
+  --md3-primary: #6750a4;
+  --md3-on-primary: #ffffff;
+  --md3-primary-container: #eaddff;
+  --md3-on-primary-container: #21005d;
+  --md3-surface: #fef7ff;
+  --md3-on-surface: #1d1b20;
+  --md3-surface-variant: #e7e0ec;
+  --md3-on-surface-variant: #49454f;
+  --md3-outline: #79747e;
+  --md3-shadow: rgba(0, 0, 0, 0.15);
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 99999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme='dark'] #hx-md3 {
+  --md3-primary: #d0bcff;
+  --md3-on-primary: #381e72;
+  --md3-primary-container: #4f378b;
+  --md3-on-primary-container: #eaddff;
+  --md3-surface: #1d1b20;
+  --md3-on-surface: #e6e0e9;
+  --md3-surface-variant: #49454f;
+  --md3-on-surface-variant: #cac4d0;
+  --md3-outline: #938f99;
+  --md3-shadow: rgba(0, 0, 0, 0.5);
+}
+
+/* ========== 药丸（折叠态） ========== */
+.md3-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 60px;
+  padding: 0 8px 0 6px;
+  border-radius: 30px;
+  background: var(--md3-surface);
+  color: var(--md3-on-surface);
+  box-shadow: 0 4px 16px var(--md3-shadow), 0 1px 3px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  max-width: 320px;
+  width: max-content;
+  user-select: none;
+}
+
+.md3-pill:hover {
+  box-shadow: 0 6px 22px var(--md3-shadow), 0 2px 5px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+}
+
+.md3-pill-cover {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--md3-primary-container);
+  flex-shrink: 0;
+}
+
+.md3-pill-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.md3-pill-meta {
+  min-width: 0;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.md3-pill-title {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+  line-height: 1.3;
+}
+
+.md3-pill-artist {
+  font-size: 12px;
+  color: var(--md3-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.md3-iconbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--md3-on-surface-variant);
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  padding: 0;
+}
+
+.md3-iconbtn:hover {
+  background: var(--md3-surface-variant);
+  color: var(--md3-on-surface);
+}
+
+.md3-iconbtn:active {
+  transform: scale(0.92);
+}
+
+.md3-iconbtn.spin svg {
+  animation: md3spin 0.6s ease;
+}
+
+@keyframes md3spin { to { transform: rotate(360deg); } }
+
+.md3-pill-toggle {
+  color: var(--md3-primary);
+  width: 44px;
+  height: 44px;
+}
+
+.md3-pill-open { width: 32px; height: 32px; }
+
+/* ========== 抽屉（展开态） ========== */
+.md3-sheet {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(78vh, 660px);
+  background: var(--md3-surface);
+  color: var(--md3-on-surface);
+  border-radius: 28px;
+  box-shadow: 0 12px 40px var(--md3-shadow), 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px 20px 20px;
+  box-sizing: border-box;
+  transform: translateY(24px) scale(0.92);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.32s cubic-bezier(0.2, 0, 0, 1),
+              opacity 0.24s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#hx-md3.expanded .md3-sheet {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#hx-md3.expanded .md3-pill {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9);
+}
+
+.md3-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.md3-sheet-label {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md3-on-surface-variant);
+  font-weight: 600;
+}
+
+.md3-sheet-close { width: 36px; height: 36px; }
+
+.md3-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 220px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--md3-primary-container);
+  margin: 0 auto 16px;
+  flex-shrink: 0;
+  box-shadow: 0 6px 20px var(--md3-shadow);
+}
+
+.md3-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.md3-title {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.md3-artist {
+  font-size: 14px;
+  color: var(--md3-on-surface-variant);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 进度条 */
+.md3-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+
+.md3-t {
+  font-size: 11px;
+  color: var(--md3-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+  min-width: 30px;
+  text-align: center;
+}
+
+.md3-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--md3-surface-variant);
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.md3-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: var(--md3-primary);
+  transition: width 0.1s linear;
+}
+
+/* 控制排 */
+.md3-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+
+.md3-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  background: var(--md3-primary);
+  color: var(--md3-on-primary);
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--md3-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.md3-fab:hover {
+  box-shadow: 0 6px 20px var(--md3-shadow);
+}
+
+.md3-fab:active { transform: scale(0.94); }
+
+/* 列表 */
+.md3-list {
+  margin-top: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.2, 0, 0, 1);
+  flex-shrink: 0;
+}
+
+.md3-sheet.show-list .md3-list {
+  max-height: 220px;
+  margin-top: 14px;
+  overflow-y: auto;
+  border-top: 1px solid var(--md3-surface-variant);
+  padding-top: 8px;
+}
+
+.md3-list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.md3-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.18s ease;
+}
+
+.md3-list li:hover { background: var(--md3-surface-variant); }
+
+.md3-list li.active {
+  background: var(--md3-primary-container);
+  color: var(--md3-on-primary-container);
+  font-weight: 600;
+}
+
+.md3-li-idx {
+  width: 20px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--md3-on-surface-variant);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.md3-list li.active .md3-li-idx { color: var(--md3-on-primary-container); }
+
+.md3-li-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.md3-li-artist {
+  font-size: 11px;
+  color: var(--md3-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+  flex-shrink: 0;
+}
+
+/* ========== 移动端 ========== */
+@media screen and (max-width: 768px) {
+  #hx-md3 { left: 12px; bottom: 12px; }
+
+  .md3-pill {
+    height: 54px;
+    max-width: calc(100vw - 24px);
+    padding-right: 6px;
+  }
+
+  .md3-pill-cover { width: 42px; height: 42px; }
+  .md3-pill-title { max-width: 100px; }
+  .md3-pill-artist { max-width: 100px; }
+
+  .md3-sheet {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-height: 82vh;
+    border-radius: 24px;
+    padding: 14px 16px 16px;
+  }
+
+  .md3-art { max-height: 180px; margin-bottom: 12px; }
+  .md3-title { font-size: 17px; }
+  .md3-fab { width: 54px; height: 54px; }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  #hx-md3 *, #hx-md3 *::before, #hx-md3 *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
